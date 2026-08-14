@@ -55,6 +55,10 @@
 
 将仓库推送到 GitHub 即可生效。
 
+## 发布固件（Release）
+
+当推送 `v*` 格式的 tag（如 `git tag v1.0.0 && git push --tags`）时，CI 会自动在 GitHub Releases 页面创建版本，并附带本次编译的 `cubemx.elf / cubemx.hex / cubemx.bin`，无需本地工具链即可获取固件。
+
 ## 更换芯片
 
 该项目模板默认是 STM32F103C8，如果你正在使用其他的芯片，请点击如图所示按钮更换芯片
