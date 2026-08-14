@@ -1,0 +1,31 @@
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ARM toolchain
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y gcc-arm-none-eabi make
+
+      - name: Build firmware
+        working-directory: cubemx_source
+        run: make -j"$(nproc)"
+
+      - name: Upload firmware artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware
+          path: |
+            cubemx_source/build/cubemx.elf
+            cubemx_source/build/cubemx.hex
+            cubemx_source/build/cubemx.bin
