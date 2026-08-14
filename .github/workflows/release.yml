@@ -25,10 +25,11 @@ jobs:
         run: make -j"$(nproc)"
 
       - name: Create release and upload firmware
-        uses: softprops/action-gh-release@v2
-        with:
-          files: |
-            cubemx_source/build/cubemx.elf
-            cubemx_source/build/cubemx.hex
-            cubemx_source/build/cubemx.bin
-          generate_release_notes: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" \
+            cubemx_source/build/cubemx.elf \
+            cubemx_source/build/cubemx.hex \
+            cubemx_source/build/cubemx.bin \
+            --generate-notes
