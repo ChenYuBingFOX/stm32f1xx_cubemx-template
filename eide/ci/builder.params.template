@@ -1,0 +1,83 @@
+{
+    "name": "stm32f1xx_cubemx",
+    "target": "Debug",
+    "toolchain": "GCC",
+    "toolchainLocation": "__TOOLCHAIN__",
+    "toolchainCfgFile": "__MODEL__",
+    "buildMode": "fast|multhread",
+    "showRepathOnLog": true,
+    "threadNum": 8,
+    "rootDir": "__ROOT_DIR__",
+    "dumpPath": "build/Debug",
+    "outDir": "build/Debug",
+    "incDirs": [
+        ".",
+        "cubemx_source",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Inc",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Inc/Legacy",
+        "cubemx_source/Drivers/CMSIS/Include",
+        "cubemx_source/Drivers/CMSIS/Device/ST/STM32F1xx/Include",
+        "cubemx_source/Core/Src",
+        "cubemx_source/Core/Inc"
+    ],
+    "libDirs": [],
+    "defines": ["USE_HAL_DRIVER", "STM32F103xB"],
+    "sourceList": [
+        "app.c",
+        "cubemx_source/Core/Src/main.c",
+        "cubemx_source/Core/Src/stm32f1xx_hal_msp.c",
+        "cubemx_source/Core/Src/stm32f1xx_it.c",
+        "cubemx_source/Core/Src/syscalls.c",
+        "cubemx_source/Core/Src/sysmem.c",
+        "cubemx_source/Core/Src/system_stm32f1xx.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_cortex.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_dma.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_exti.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_flash_ex.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_gpio_ex.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_pwr.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc.c",
+        "cubemx_source/Drivers/STM32F1xx_HAL_Driver/Src/stm32f1xx_hal_rcc_ex.c",
+        "cubemx_source/startup_stm32f103xb.s"
+    ],
+    "alwaysInBuildSources": [],
+    "sourceParams": {},
+    "options": {
+        "version": 5,
+        "afterBuildTasks": [],
+        "asm-compiler": {},
+        "beforeBuildTasks": [],
+        "c/cpp-compiler": {
+            "language-c": "c17",
+            "language-cpp": "c++11",
+            "one-elf-section-per-data": true,
+            "one-elf-section-per-function": true,
+            "optimization": "level-debug",
+            "warnings": "all-warnings"
+        },
+        "global": {
+            "$float-abi-type": "softfp",
+            "misc-control": "--specs=nosys.specs --specs=nano.specs",
+            "output-debug-info": "enable",
+            "toolPrefix": "arm-none-eabi-",
+            "arm-thumb-mode": "thumb",
+            "microcontroller-cpu": "cortex-m3",
+            "microcontroller-fpu": "cortex-m3",
+            "microcontroller-float": "cortex-m3",
+            "$arch-extensions": "",
+            "$clang-arch-extensions": "",
+            "$armlink-arch-extensions": ""
+        },
+        "linker": {
+            "$toolName": "gcc",
+            "output-format": "elf",
+            "remove-unused-input-sections": true,
+            "link-scatter": ["__LINK_SCRIPT__"]
+        }
+    },
+    "sysPaths": []
+}

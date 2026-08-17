@@ -7,33 +7,47 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: windows-latest
     steps:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install build tools
+      - name: Download toolchain (ARM GNU 10-2020-q4, same as local EIDE 10.2.1)
+        shell: pwsh
         run: |
-          sudo apt-get update
-          sudo apt-get install -y cmake make
+          Invoke-WebRequest -Uri "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-win32.zip" -OutFile "$env:RUNNER_TEMP/toolchain.zip"
+          Expand-Archive "$env:RUNNER_TEMP/toolchain.zip" "$env:RUNNER_TEMP/toolchain"
 
-      - name: Install toolchain (ARM GNU 10-2020-q4, same as local EIDE 10.2.1)
+      - name: Download EIDE builder (extension 3.27.2)
+        shell: pwsh
         run: |
-          wget -q "https://developer.arm.com/-/media/Files/downloads/gnu-rm/10-2020q4/gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2"
-          tar xjf gcc-arm-none-eabi-10-2020-q4-major-x86_64-linux.tar.bz2
-          echo "$PWD/gcc-arm-none-eabi-10-2020-q4-major/bin" >> "$GITHUB_PATH"
+          Invoke-WebRequest -Uri "https://open-vsx.org/api/cl/eide/3.27.2/file/cl.eide-3.27.2.vsix" -OutFile "$env:RUNNER_TEMP/eide.vsix"
+          Expand-Archive "$env:RUNNER_TEMP/eide.vsix" "$env:RUNNER_TEMP/eide"
 
-      - name: Build firmware
-        working-directory: cubemx_source
+      - name: Build firmware with EIDE unify_builder
+        shell: pwsh
         run: |
-          cmake -B ../build -DCMAKE_BUILD_TYPE=Debug
-          cmake --build ../build -j"$(nproc)"
+          $ws = $env:GITHUB_WORKSPACE.Replace('\','/')
+          $toolchain = "$env:RUNNER_TEMP/toolchain/gcc-arm-none-eabi-10-2020-q4-major"
+          $env:Path = "$toolchain/bin;$env:Path"
+          $tpl = Get-Content "$ws/eide/ci/builder.params.template" -Raw
+          $params = $tpl.Replace('__ROOT_DIR__', $ws) `
+                        .Replace('__TOOLCHAIN__', $toolchain) `
+                        .Replace('__MODEL__', "$ws/eide/ci/arm.gcc.model.json") `
+                        .Replace('__LINK_SCRIPT__', "$ws/cubemx_source/STM32F103XX_FLASH.ld")
+          New-Item -ItemType Directory -Path "$ws/build/Debug" -Force | Out-Null
+          $params | Set-Content "$ws/build/Debug/builder.params" -Encoding UTF8
+          $builder = "$env:RUNNER_TEMP/eide/extension/res/tools/win32/unify_builder/unify_builder.exe"
+          & $builder -p "$ws/build/Debug/builder.params" --rebuild --no-color
+          if ($LASTEXITCODE -ne 0) { throw "EIDE build failed" }
+          $hash = Get-FileHash "$ws/build/Debug/stm32f1xx_cubemx.bin" -Algorithm SHA256
+          "SHA256 of cubemx.bin: $($hash.Hash)"
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v7
         with:
           name: firmware
           path: |
-            build/cubemx.elf
-            build/cubemx.hex
-            build/cubemx.bin
+            build/Debug/stm32f1xx_cubemx.elf
+            build/Debug/stm32f1xx_cubemx.hex
+            build/Debug/stm32f1xx_cubemx.bin
