@@ -31,10 +31,7 @@ jobs:
           $toolchain = "$env:RUNNER_TEMP/toolchain/gcc-arm-none-eabi-10-2020-q4-major"
           $env:Path = "$toolchain/bin;$env:Path"
           $tpl = Get-Content "$ws/eide/ci/builder.params.template" -Raw
-          $params = $tpl.Replace('__ROOT_DIR__', $ws) `
-                        .Replace('__TOOLCHAIN__', $toolchain) `
-                        .Replace('__MODEL__', "$ws/eide/ci/arm.gcc.model.json") `
-                        .Replace('__LINK_SCRIPT__', "$ws/cubemx_source/STM32F103XX_FLASH.ld")
+          $params = $tpl.Replace('__ROOT_DIR__', $ws).Replace('__TOOLCHAIN__', $toolchain).Replace('__MODEL__', "$ws/eide/ci/arm.gcc.model.json").Replace('__LINK_SCRIPT__', "$ws/cubemx_source/STM32F103XX_FLASH.ld")
           New-Item -ItemType Directory -Path "$ws/build/Debug" -Force | Out-Null
           $params | Set-Content "$ws/build/Debug/builder.params" -Encoding UTF8
           $builder = "$env:RUNNER_TEMP/eide/extension/res/tools/win32/unify_builder/unify_builder.exe"
