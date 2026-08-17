@@ -12,20 +12,22 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v5
 
-      - name: Install ARM toolchain
+      - name: Install toolchain
         run: |
           sudo apt-get update
-          sudo apt-get install -y gcc-arm-none-eabi make
+          sudo apt-get install -y gcc-arm-none-eabi cmake make
 
       - name: Build firmware
         working-directory: cubemx_source
-        run: make -j"$(nproc)"
+        run: |
+          cmake -B ../build -DCMAKE_BUILD_TYPE=Debug
+          cmake --build ../build -j"$(nproc)"
 
       - name: Upload firmware artifacts
         uses: actions/upload-artifact@v7
         with:
           name: firmware
           path: |
-            cubemx_source/build/cubemx.elf
-            cubemx_source/build/cubemx.hex
-            cubemx_source/build/cubemx.bin
+            build/cubemx.elf
+            build/cubemx.hex
+            build/cubemx.bin

@@ -11,6 +11,9 @@
 /obj
 /out
 
+# eide generated root Makefile (regenerated on every eide build)
+/Makefile
+
 # eide template
 *.ept
 *.eide-template

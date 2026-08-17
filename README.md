@@ -42,18 +42,24 @@
 
 完成上述步骤后，一切就绪，现在可以执行编译了。
 
-> 注意：工程根目录下的 `app.c` 已通过 Makefile 中的 `../app.c` 与 `-I..` 纳入 make 构建（供 CI 使用），
-> 使用 STM32CubeMX 重新生成代码会覆盖 Makefile，需要重新加上这两处。
+> 构建说明：本工程有两条构建路径 ——
+> ① VS Code + eide 插件（日常开发，负责构建/烧录/调试）；
+> ② CMake 命令行构建（`cubemx_source/CMakeLists.txt`，CI 自动化使用，产出相同的固件）。
+> 两条路径使用的编译宏与链接脚本一致，`app.c` 在两侧均已登记。
 
 ## 持续集成（CI）
 
 工程内置 GitHub Actions 工作流 `.github/workflows/build.yml`，每次 push / pull request 会自动执行：
 
-1. 在 Ubuntu 上安装 `gcc-arm-none-eabi` 工具链
-2. 执行 `make` 编译固件
+1. 在 Ubuntu 上安装 `gcc-arm-none-eabi` + `cmake`
+2. 用 CMake 编译固件（`cubemx_source/CMakeLists.txt`）
 3. 上传 `cubemx.elf / cubemx.hex / cubemx.bin` 构建产物
 
 将仓库推送到 GitHub 即可生效。
+
+> 注意：CI 使用 CMake 构建，工程根目录下的 `app.c` 已在 `cubemx_source/CMakeLists.txt` 中登记。
+> STM32CubeMX 重新生成代码只会更新它自己的 Makefile（CI 不再使用），新增源码文件时需同步到 CMakeLists.txt 的 `C_SOURCES` 列表中。
+> 本地命令行构建：`cmake -B cubemx_source/build -S cubemx_source && cmake --build cubemx_source/build`
 
 ## 发布固件（Release）
 
